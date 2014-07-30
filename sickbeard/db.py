@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -51,6 +52,14 @@ def dbFilename(filename="sickbeard.db", suffix=None):
         filename = "%s.%s" % (filename, suffix)
     return ek.ek(os.path.join, sickbeard.DATA_DIR, filename)
 
+# functions for sqlite UDFs
+def _udf_dropspecialchars(text):
+    reps = {'á':'a', 'ã':'a', 'â':'a', 'é':'e', 'ê':'e', 'í':'i','ó':'o' ,'õ':'o' ,'ô':'o','ú':'u', 'ç':'c', 'ä':'ae', 'ü':'ue', 'ö':'oe', 'ß':'ss'}
+    text = text.lower()
+    for a, b in reps.iteritems():
+        text = text.replace(a, b)
+    return text
+
 class DBConnection:
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
@@ -60,6 +69,7 @@ class DBConnection:
             self.connection.row_factory = self._dict_factory
         else:
             self.connection.row_factory = sqlite3.Row
+        self.connection.create_function('dropspecialchars', 1, _udf_dropspecialchars)
 
     def checkDBVersion(self):
         try:

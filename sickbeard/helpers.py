@@ -380,7 +380,7 @@ def searchDBForShow(regShowName):
 
     for showName in showNames:
 
-        sqlResults = myDB.select("SELECT * FROM tv_shows WHERE show_name LIKE ? OR tvr_name LIKE ?", [showName, showName])
+        sqlResults = myDB.select("SELECT * FROM tv_shows WHERE dropspecialchars(show_name) LIKE dropspecialchars(?) OR dropspecialchars(tvr_name) LIKE dropspecialchars(?)", [showName, showName])
 
         if len(sqlResults) == 1:
             return (int(sqlResults[0]["tvdb_id"]), sqlResults[0]["show_name"])
